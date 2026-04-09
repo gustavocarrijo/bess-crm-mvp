@@ -270,7 +270,7 @@ export async function importFromPipedrive(
     // -----------------------------------------------------------------------
     // Load CRM Norr Energia users for email matching
     // -----------------------------------------------------------------------
-    const CRM Norr EnergiaUsers = await db.query.users.findMany({
+    const crmNorrEnergiaUsers = await db.query.users.findMany({
       where: isNull(users.deletedAt),
       columns: { id: true, email: true },
     })
@@ -278,13 +278,13 @@ export async function importFromPipedrive(
     // Load Pipedrive users and build owner mapping
     const pipedriveUsersData = await client.fetchUsers()
     const pipedriveUsers = pipedriveUsersData as PipedriveUser[]
-    const pdUserToCRM Norr EnergiaUser = new Map<number, string>()
+    const pdUserTocrmNorrEnergiaUsers = new Map<number, string>()
 
     for (const pdUser of pipedriveUsers) {
-      const match = CRM Norr EnergiaUsers.find(
+      const match = crmNorrEnergiaUsers.find(
         (u) => u.email.toLowerCase() === pdUser.email.toLowerCase()
       )
-      pdUserToCRM Norr EnergiaUser.set(pdUser.id, match?.id ?? importingUserId)
+      pdUserTocrmNorrEnergiaUsers.set(pdUser.id, match?.id ?? importingUserId)
     }
 
     // -----------------------------------------------------------------------
@@ -588,7 +588,7 @@ export async function importFromPipedrive(
         if (!existing) {
           // v2 API: owner_id is a plain number (not an object)
           const ownerId = pdOrg.owner_id
-            ? pdUserToCRM Norr EnergiaUser.get(pdOrg.owner_id) ?? importingUserId
+            ? pdUserTocrmNorrEnergiaUsers.get(pdOrg.owner_id) ?? importingUserId
             : importingUserId
 
           // Pass Pipedrive field definitions (pdOrgFields) so extractCustomFieldValues
@@ -661,7 +661,7 @@ export async function importFromPipedrive(
         if (!existing) {
           // v2 API: owner_id is a plain number (not an object)
           const ownerId = pdPerson.owner_id
-            ? pdUserToCRM Norr EnergiaUser.get(pdPerson.owner_id) ?? importingUserId
+            ? pdUserTocrmNorrEnergiaUsers.get(pdPerson.owner_id) ?? importingUserId
             : importingUserId
 
           const transformed = transformPipedrivePerson(
@@ -740,7 +740,7 @@ export async function importFromPipedrive(
         if (!existing) {
           // v2 API: owner_id is a plain number (not an object)
           const ownerId = pdDeal.owner_id
-            ? pdUserToCRM Norr EnergiaUser.get(pdDeal.owner_id) ?? importingUserId
+            ? pdUserTocrmNorrEnergiaUsers.get(pdDeal.owner_id) ?? importingUserId
             : importingUserId
 
           // Handle orphan references - create stubs if needed
@@ -865,7 +865,7 @@ export async function importFromPipedrive(
 
         for (const pdActivity of pdActivities) {
           const ownerId = pdActivity.owner_id
-            ? pdUserToCRM Norr EnergiaUser.get(pdActivity.owner_id) ?? importingUserId
+            ? pdUserTocrmNorrEnergiaUsers.get(pdActivity.owner_id) ?? importingUserId
             : importingUserId
 
           // Resolve deal ID
