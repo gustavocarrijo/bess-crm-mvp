@@ -461,14 +461,14 @@ export function transformPipedriveCustomField(
   }
 
   // Map field type
-  const CRM Norr EnergiaType = mapPipedriveFieldTypeInternal(f.field_type)
-  if (!CRM Norr EnergiaType) {
+  const crmNorrEnergiaType = mapPipedriveFieldTypeInternal(f.field_type)
+  if (!crmNorrEnergiaType) {
     return null // Unsupported field type
   }
 
   // Build config for select fields
   let config: { options: string[] } | null = null
-  if ((CRM Norr EnergiaType === "single_select" || CRM Norr EnergiaType === "multi_select") && f.options) {
+  if ((crmNorrEnergiaType === "single_select" || crmNorrEnergiaType === "multi_select") && f.options) {
     config = {
       options: f.options.map((opt) => opt.label),
     }
@@ -477,7 +477,7 @@ export function transformPipedriveCustomField(
   return {
     entityType,
     name: f.name,
-    type: CRM Norr EnergiaType,
+    type: crmNorrEnergiaType,
     config,
     required: f.mandatory_flag || false,
     position: String(f.order_nr || 10000),
