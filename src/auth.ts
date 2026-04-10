@@ -32,6 +32,7 @@ class EmailNotVerifiedError extends CredentialsSignin {
  */
 export const config = {
   ...authConfig,
+  secret: process.env.AUTH_SECRET,
   // Cast needed: @auth/drizzle-adapter and next-auth bundle separate @auth/core copies
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   adapter: DrizzleAdapter(db) as any,
